@@ -1,10 +1,8 @@
 from time import sleep as sl
 from sys import argv
 
-def create_lines(prb_len, segments, symbols, moving, color_codes):
-    def coloring(text, tcolor, bcolor):
-        return f"\033[38;5;{tcolor}m\033[48;5;{bcolor}m{text}\033[0;0m"
-    
+def main(prb_len: int, segments: int, symbols: str, moving: int, wait: float, color_codes):
+    ##Creating lines once to the end
     forward = []
     backward = []
 
@@ -20,39 +18,30 @@ def create_lines(prb_len, segments, symbols, moving, color_codes):
         prbls = ("".ljust(n, " "), "".ljust(moving-n, " "))
 
         ##Creating full, colored lines from start spaces, base line and end spaces
-        forward.append(coloring(f"{prbls[0]}{line}{prbls[1]}", color_codes[0], color_codes[1]))
-        backward.append(coloring(f"{prbls[1]}{line}{prbls[0]}", color_codes[0], color_codes[1]))
-
-    return (forward, backward)
-
-def main(prb_len, segments, symbols, moving, wait, color_codes):
-    ##Creating lines once to the end
-    lines = create_lines(prb_len, segments, symbols, moving, color_codes)
+        forward.append(f"\033[38;5;{color_codes[0]}m\033[48;5;{color_codes[1]}m{prbls[0]}{line}{prbls[1]}\033[0;0m")
+        backward.append(f"\033[38;5;{color_codes[0]}m\033[48;5;{color_codes[1]}m{prbls[1]}{line}{prbls[0]}\033[0;0m")
     
-    ##Printing them for user in endless loop
     while True:
-        for f in lines[0]:
+        for f in forward:
             print(f)
             sl(wait)
-        for b in lines[1]:
+        for b in backward:
             print(b)
             sl(wait)
 
 if __name__ == "__main__":
     try:
         try:
-            ##Argv handling
             main(
-                int(argv[1]),
-                int(argv[2]),
-                argv[3],
-                int(argv[4]),
-                float(argv[5]),
-                (int(argv[6]),
-                int(argv[7]))
+                int(argv[1]),   # prb_len
+                int(argv[2]),   # segments
+                argv[3],        # symbols
+                int(argv[4]),   # moving
+                float(argv[5]), # wait
+                (int(argv[6]),  # color_code text
+                int(argv[7]))   # color_code text background
             )
         except IndexError:
-            ##No argv handling
             main(
                 int(input("Number of spaces between chars: ")),
                 int(input("Number of char lines: ")),
